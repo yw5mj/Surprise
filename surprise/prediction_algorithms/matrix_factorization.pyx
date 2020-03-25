@@ -129,7 +129,7 @@ class SVD(AlgoBase):
                  init_std_dev=.1, lr_all=.005,
                  reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None, lr_qi=None,
                  reg_bu=None, reg_bi=None, reg_pu=None, reg_qi=None,
-                 random_state=None, verbose=False):
+                 random_state=None, verbose=False,rand_qi=True):
 
         self.n_factors = n_factors
         self.n_epochs = n_epochs
@@ -146,7 +146,7 @@ class SVD(AlgoBase):
         self.reg_qi = reg_qi if reg_qi is not None else reg_all
         self.random_state = random_state
         self.verbose = verbose
-
+        self.rand_qi = rand_qi
         AlgoBase.__init__(self)
 
     def fit(self, trainset):
@@ -219,7 +219,10 @@ class SVD(AlgoBase):
         bi = np.zeros(trainset.n_items, np.double)
         pu = rng.normal(self.init_mean, self.init_std_dev,
                         (trainset.n_users, self.n_factors))
-        qi = rng.normal(self.init_mean, self.init_std_dev,
+        if not self.rand_qi:
+            qi=np.array(self.qi)
+            print("INITIATE QI with SVD.qi")
+        else:qi = rng.normal(self.init_mean, self.init_std_dev,
                         (trainset.n_items, self.n_factors))
 
         if not self.biased:
